@@ -22,11 +22,8 @@
     --accent: #5e9cf5;
     --accent2: #7eb8ff;
     --green: #4ade80;
-    --green-bg: #0a2218;
     --red: #f87171;
-    --red-bg: #220a0a;
     --yellow: #fbbf24;
-    --yellow-bg: #1f1600;
     --code-bg: #0a0d14;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
     --font-ui: 'Syne', system-ui, sans-serif;
@@ -66,8 +63,7 @@
     white-space: nowrap;
   }
   #topbar .sep { flex: 1; }
-  
-  /* Editable Title Typography */
+
   #notebook-name {
     font-family: var(--font-ui);
     font-size: 1.1rem;
@@ -83,15 +79,8 @@
     cursor: text;
     transition: all 0.2s;
   }
-  #notebook-name:hover {
-    background: var(--surface2);
-    border-bottom-color: var(--accent);
-  }
-  #notebook-name:focus {
-    outline: none;
-    background: var(--code-bg);
-    border-bottom: 2px solid var(--accent);
-  }
+  #notebook-name:hover { background: var(--surface2); border-bottom-color: var(--accent); }
+  #notebook-name:focus { outline: none; background: var(--code-bg); border-bottom: 2px solid var(--accent); }
 
   /* ── STATUS PILL ── */
   #status-pill {
@@ -144,11 +133,13 @@
   .btn.danger { border-color: #5a2020; }
   .btn.danger:hover { border-color: var(--red); color: var(--red); }
 
-  /* ── SIDEBAR ── */
+  /* ── LAYOUT ── */
   #layout {
     display: flex;
     min-height: calc(100vh - 56px);
   }
+
+  /* ── SIDEBAR ── */
   #sidebar {
     width: 280px;
     flex-shrink: 0;
@@ -185,16 +176,16 @@
   }
   #drop-zone .icon { font-size: 24px; margin-bottom: 6px; opacity: 0.6; }
   #file-input { display: none; }
+  #local-file-bridge { display: none; }
 
-  .sidebar-section { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
+  .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     border-top: 1px solid var(--border);
     padding-top: 14px;
   }
 
-  /* Environment File List Elements */
   .vfs-file-item {
     display: flex;
     align-items: center;
@@ -207,8 +198,19 @@
     border-radius: 4px;
     border: 1px solid var(--border);
   }
+  .vfs-file-item span.vfs-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-  #cell-index { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; max-height: 200px; }
+  #cell-index {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    max-height: 200px;
+  }
   .idx-item {
     display: flex;
     align-items: center;
@@ -231,6 +233,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    flex-shrink: 0;
   }
   .idx-badge.code { background: rgba(94,156,245,0.15); color: var(--accent); }
   .idx-badge.md   { background: rgba(74,222,128,0.12); color: var(--green); }
@@ -249,7 +252,14 @@
   }
   .sidebar-stats span { color: var(--text-muted); }
 
-  /* ── MAIN CONTENT ── */
+  .kbd-hints {
+    margin-top: auto;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  /* ── MAIN ── */
   #main {
     flex: 1;
     min-width: 0;
@@ -267,12 +277,7 @@
     background: var(--surface);
     flex-wrap: wrap;
   }
-  .toolbar-sep {
-    width: 1px;
-    height: 20px;
-    background: var(--border2);
-    margin: 0 4px;
-  }
+  .toolbar-sep { width: 1px; height: 20px; background: var(--border2); margin: 0 4px; }
 
   /* ── LANDING ── */
   #landing {
@@ -286,11 +291,7 @@
     text-align: center;
   }
   #landing .logo { font-size: 48px; }
-  #landing h2 {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--accent2);
-  }
+  #landing h2 { font-size: 22px; font-weight: 700; color: var(--accent2); }
   #landing p { color: var(--text-muted); font-size: 14px; max-width: 420px; line-height: 1.7; }
   #landing .hint {
     font-size: 12px;
@@ -306,10 +307,9 @@
   #cells-area {
     flex: 1;
     padding: 20px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
     display: none;
+    flex-direction: column;
+    gap: 0;
   }
 
   /* ── INTERLINE ADD BAR ── */
@@ -356,18 +356,17 @@
     transition: all 0.1s;
     font-weight: 500;
   }
-  .btn-add-inline:hover {
-    color: var(--accent2);
-    background: var(--surface2);
-  }
+  .btn-add-inline:hover { color: var(--accent2); background: var(--surface2); }
 
-  /* ── CELL CONTAINER ── */
+  /* ── CELL WRAPPER ── */
   .cell-wrapper-block {
     display: flex;
     flex-direction: column;
     margin-bottom: 12px;
+    overflow: visible;
   }
 
+  /* ── CELL ── */
   .cell {
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -376,12 +375,13 @@
     position: relative;
     background: var(--bg);
   }
-  .cell:hover { border-color: var(--border2); }
+  .cell:hover  { border-color: var(--border2); }
   .cell.running { border-color: var(--accent); }
   .cell.has-error { border-color: var(--red); }
   .cell.success { border-color: rgba(74,222,128,0.35); }
   .cell.selected { border-color: var(--accent) !important; }
 
+  /* ── CELL HEADER ── */
   .cell-header {
     display: flex;
     align-items: center;
@@ -401,13 +401,12 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .cell-type-badge.code { background: rgba(94,156,245,0.15); color: var(--accent); }
+  .cell-type-badge.code     { background: rgba(94,156,245,0.15); color: var(--accent); }
   .cell-type-badge.markdown { background: rgba(74,222,128,0.12); color: var(--green); }
-  .cell-type-badge.raw { background: rgba(124,136,168,0.15); color: var(--text-muted); }
-
+  .cell-type-badge.raw      { background: rgba(124,136,168,0.15); color: var(--text-muted); }
   .cell-exec-count { color: var(--text-dim); font-size: 11px; }
   .cell-header-actions { margin-left: auto; display: flex; gap: 6px; }
-  
+
   .cell-btn {
     background: none;
     border: 1px solid transparent;
@@ -423,17 +422,12 @@
     gap: 4px;
   }
   .cell-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
-  .cell-btn.run-btn { color: var(--accent2); }
+  .cell-btn.run-btn  { color: var(--accent2); }
   .cell-btn.run-btn:hover { border-color: var(--accent); background: rgba(94,156,245,0.08); }
-  
   .cell-btn.delete-btn { color: var(--red); font-weight: 500; }
-  .cell-btn.delete-btn:hover { 
-    border-color: rgba(248,113,113,0.4); 
-    background: rgba(248,113,113,0.08); 
-    color: #ff8888; 
-  }
+  .cell-btn.delete-btn:hover { border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.08); color: #ff8888; }
 
-  /* Code editor area */
+  /* ── CODE EDITOR ── */
   .cell-code {
     background: var(--code-bg);
     font-family: var(--font-mono);
@@ -448,15 +442,10 @@
     min-height: 40px;
     tab-size: 4;
   }
-  .cell-code[contenteditable="true"] {
-    cursor: text;
-    caret-color: var(--accent2);
-  }
-  .cell-code[contenteditable="true"]:focus {
-    box-shadow: inset 3px 0 0 var(--accent);
-  }
+  .cell-code[contenteditable="true"] { cursor: text; caret-color: var(--accent2); }
+  .cell-code[contenteditable="true"]:focus { box-shadow: inset 3px 0 0 var(--accent); }
 
-  /* Markdown rendered */
+  /* ── MARKDOWN ── */
   .cell-markdown {
     padding: 16px 20px;
     background: var(--surface2);
@@ -485,24 +474,17 @@
     overflow-x: auto;
     margin: 8px 0;
   }
-  .cell-markdown pre code {
-    background: none; border: none; padding: 0; color: var(--text);
-  }
+  .cell-markdown pre code { background: none; border: none; padding: 0; color: var(--text); }
   .cell-markdown ul, .cell-markdown ol { padding-left: 20px; margin: 0 0 8px; }
   .cell-markdown li { margin-bottom: 3px; }
   .cell-markdown a { color: var(--accent2); }
   .cell-markdown strong { color: var(--text); }
-  .cell-markdown blockquote {
-    border-left: 3px solid var(--accent);
-    padding-left: 12px;
-    color: var(--text-muted);
-    margin: 8px 0;
-  }
+  .cell-markdown blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--text-muted); margin: 8px 0; }
   .cell-markdown table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 13px; }
   .cell-markdown th, .cell-markdown td { border: 1px solid var(--border2); padding: 5px 10px; }
   .cell-markdown th { background: var(--surface); color: var(--text-muted); font-weight: 600; }
 
-  /* Output area */
+  /* ── OUTPUT ── */
   .cell-output {
     background: var(--code-bg);
     border-top: 1px solid var(--border);
@@ -517,20 +499,20 @@
     overflow-y: auto;
   }
   .cell-output.empty { display: none; }
-  .cell-output .out-stream   { color: var(--text); }
-  .cell-output .out-result   { color: var(--accent2); }
-  .cell-output .out-error    { color: var(--red); }
-  .cell-output .out-html     { font-family: var(--font-ui); white-space: normal; }
-  .cell-output .out-img      { max-width: 100%; border-radius: 4px; margin: 4px 0; display: block; }
+  .cell-output .out-stream { color: var(--text); }
+  .cell-output .out-result { color: var(--accent2); }
+  .cell-output .out-error  { color: var(--red); }
+  .cell-output .out-html   { font-family: var(--font-ui); white-space: normal; }
+  .cell-output .out-img    { max-width: 100%; border-radius: 4px; margin: 4px 0; display: block; }
 
-  /* Creator Footer Pinned layout */
+  /* ── BOTTOM CREATOR ── */
   #bottom-cell-creator {
     padding: 16px 24px 40px;
     display: none;
     justify-content: center;
   }
 
-  /* Spinner */
+  /* ── SPINNER ── */
   .spinner {
     display: inline-block;
     width: 12px; height: 12px;
@@ -541,7 +523,7 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Pyodide loading overlay */
+  /* ── PYODIDE BOOT OVERLAY ── */
   #py-loader {
     position: fixed;
     inset: 0;
@@ -557,21 +539,10 @@
   }
   #py-loader h2 { font-size: 18px; color: var(--accent2); font-family: var(--font-ui); font-weight: 700; }
   #py-loader p  { color: var(--text-muted); font-size: 13px; }
-  #py-progress {
-    width: 280px; height: 4px;
-    background: var(--surface2);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  #py-progress-bar {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.4s;
-  }
+  #py-progress { width: 280px; height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  #py-progress-bar { height: 100%; background: var(--accent); border-radius: 4px; width: 0%; transition: width 0.4s; }
 
-  /* Keyboard shortcut hint */
+  /* ── KBD ── */
   .kbd {
     display: inline-block;
     font-family: var(--font-mono);
@@ -583,7 +554,7 @@
     color: var(--text-dim);
   }
 
-  /* Toast */
+  /* ── TOAST ── */
   #toast {
     position: fixed;
     bottom: 20px;
@@ -622,6 +593,7 @@
 </head>
 <body>
 
+<!-- Boot overlay -->
 <div id="py-loader">
   <div style="font-size:40px;">🐍</div>
   <h2>Initializing Python Runtime</h2>
@@ -629,6 +601,7 @@
   <p id="py-status">Loading Pyodide WebAssembly runtime…</p>
 </div>
 
+<!-- Top bar -->
 <div id="topbar">
   <h1>⬡ MetroNote</h1>
   <span id="notebook-name" contenteditable="true" spellcheck="false">Untitled_Notebook</span>
@@ -640,48 +613,62 @@
 </div>
 
 <div id="layout">
-  <aside id="sidebar">
-    <h2>Open Notebook</h2>
-    <div id="drop-zone" onclick="document.getElementById('file-input').click()">
-      <div class="icon">📂</div>
-      <div>Drop <strong>.ipynb</strong> here</div>
-      <div style="font-size:11px;margin-top:4px;color:var(--text-dim)">or click to browse</div>
-    </div>
-    <input type="file" id="file-input" accept=".ipynb" />
 
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div>
+      <h2>Open Notebook</h2>
+      <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div class="icon">📂</div>
+        <div>Drop <strong>.ipynb</strong> here</div>
+        <div style="font-size:11px;margin-top:4px;color:var(--text-dim)">or click to browse</div>
+      </div>
+      <input type="file" id="file-input" accept=".ipynb" />
+    </div>
+
+    <!-- VFS Bridge -->
     <div class="sidebar-section" id="vfs-bridge-section">
       <h2>Environment Files</h2>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">Upload pre-built binaries or models into memory.</p>
-      <input type="file" id="local-file-bridge" multiple style="display:none;" onchange="syncFilesToPyodide()" />
-      <button class="btn" onclick="document.getElementById('local-file-bridge').click()" style="width:100%; justify-content:center;">📤 Upload Binaries / Models</button>
-      <div id="vfs-inventory-list" style="margin-top: 6px; display:flex; flex-direction:column; gap:4px;">
-        <div style="font-size:11px; color:var(--text-dim); font-style:italic;">No custom files mounted yet</div>
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">
+        Upload binaries, models, or data files into the Python workspace memory.
+      </p>
+      <input type="file" id="local-file-bridge" multiple />
+      <button class="btn" id="btn-upload-files" style="width:100%;justify-content:center;">
+        📤 Upload Files
+      </button>
+      <div id="vfs-inventory-list" style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:11px;color:var(--text-dim);font-style:italic;">No files mounted yet</div>
       </div>
     </div>
 
+    <!-- Cell Index -->
     <div class="sidebar-section" id="index-section" style="display:none">
       <h2>Cells</h2>
       <div id="cell-index"></div>
     </div>
 
+    <!-- Stats -->
     <div class="sidebar-stats" id="nb-stats" style="display:none">
       <div><span id="stat-cells">0</span> cells total</div>
       <div><span id="stat-code">0</span> code cells</div>
       <div><span id="stat-md">0</span> markdown cells</div>
-      <div><span id="stat-kernel">—</span></div>
+      <div id="stat-kernel">—</div>
     </div>
 
-    <div style="margin-top:auto;font-size:11px;color:var(--text-dim);line-height:1.8;">
+    <!-- Keyboard hints -->
+    <div class="kbd-hints">
       <div><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> Run cell</div>
-      <div><span class="kbd">Shift</span>+<span class="kbd">Enter</span> Run & next</div>
+      <div><span class="kbd">Shift</span>+<span class="kbd">Enter</span> Run &amp; next</div>
+      <div><span class="kbd">Tab</span> Indent 4 spaces</div>
       <div><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">R</span> Run all</div>
     </div>
   </aside>
 
+  <!-- Main content -->
   <main id="main">
     <div id="toolbar" style="display:none">
-      <button class="btn" id="btn-run-all" onclick="runAll()">▶ Run All</button>
-      <button class="btn" id="btn-run-sel" onclick="runSelected()">▷ Run Selected</button>
+      <button class="btn" onclick="runAll()">▶ Run All</button>
+      <button class="btn" onclick="runSelected()">▷ Run Selected</button>
       <div class="toolbar-sep"></div>
       <button class="btn danger" onclick="clearAllOutputs()">✕ Clear Outputs</button>
       <button class="btn" onclick="resetKernel()">↺ Reset Kernel</button>
@@ -692,12 +679,13 @@
     <div id="landing">
       <div class="logo">📓</div>
       <h2>Open a Jupyter Notebook</h2>
-      <p>Drop any <code>.ipynb</code> file onto the sidebar or click the folder icon. Python runs locally in your browser via Pyodide — no server or internet required after load.</p>
-      <div class="hint">Supports: code cells · markdown · outputs · HTML · images</div>
+      <p>Drop any <code>.ipynb</code> file onto the sidebar or click the folder icon.
+         Python runs locally in your browser via Pyodide — no server required after initial load.</p>
+      <div class="hint">Supports: code cells · markdown · outputs · HTML · images · matplotlib</div>
     </div>
 
     <div id="cells-area"></div>
-    
+
     <div id="bottom-cell-creator">
       <div class="add-cell-actions" style="border-color:var(--border2);background:var(--surface);">
         <button class="btn-add-inline" onclick="insertCellAt(cells.length, 'code')">+ Add Code Cell</button>
@@ -711,34 +699,44 @@
 
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════════ */
-let pyodide = null;
-let pyReady = false;
-let notebook = null;
-let cells = [];       
-let selectedCell = -1;
-let execCounter = 0;
-let indexDebounceTimeout = null;
+'use strict';
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS — VFS path Python code writes to / reads from
+═══════════════════════════════════════════════════════════════ */
+const VFS_ROOT = '/home/pyodide';
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+let pyodide       = null;
+let pyReady       = false;
+let notebook      = null;   // the parsed .ipynb object
+let cells         = [];     // array of cell descriptor objects
+let selectedCell  = -1;
+let execCounter   = 0;
+
+// Tracks filenames the user has uploaded (for inventory display)
+const userUploadedFiles = new Set();
+
+let indexDebounceTimer = null;
+
+/* ═══════════════════════════════════════════════════════════════
    PYODIDE INIT
-═══════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
 async function initPyodide() {
-  const bar = document.getElementById('py-progress-bar');
+  const bar    = document.getElementById('py-progress-bar');
   const status = document.getElementById('py-status');
   try {
     bar.style.width = '15%';
     status.textContent = 'Downloading WebAssembly bundle…';
-    pyodide = await loadPyodide({
-      indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.3/full/',
-    });
+
+    pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.3/full/' });
 
     bar.style.width = '60%';
     status.textContent = 'Installing core packages…';
-
     await pyodide.loadPackage(['micropip']);
+
     bar.style.width = '80%';
     status.textContent = 'Setting up output capture…';
 
@@ -772,98 +770,99 @@ except ImportError:
     status.textContent = 'Ready!';
     pyReady = true;
 
-    setTimeout(() => {
-      document.getElementById('py-loader').style.display = 'none';
-    }, 400);
-
+    setTimeout(() => { document.getElementById('py-loader').style.display = 'none'; }, 400);
     setStatus('ready', 'Python ready');
-    updateVfsInventory();
+    refreshVfsInventory();
+
   } catch (e) {
     status.textContent = 'Failed to load Pyodide: ' + e.message;
-    bar.style.background = 'var(--red)';
+    document.getElementById('py-progress-bar').style.background = 'var(--red)';
     setStatus('error', 'Pyodide failed');
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   STATUS PILL
+═══════════════════════════════════════════════════════════════ */
 function setStatus(cls, text) {
-  const pill = document.getElementById('status-pill');
-  pill.className = cls;
+  document.getElementById('status-pill').className = cls;
   document.getElementById('status-text').textContent = text;
 }
 
-/* ═══════════════════════════════════════════════════════
-   LOCAL VFS FILE TRANSFER BRIDGE
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   VFS FILE BRIDGE
+   FIX: Single definition only. Writes to VFS_ROOT (/home/pyodide).
+        Inventory reads from the same VFS_ROOT path.
+        User-uploaded files tracked in userUploadedFiles Set
+        so we never show Pyodide internals in the inventory.
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('btn-upload-files').addEventListener('click', () => {
+  document.getElementById('local-file-bridge').click();
+});
+
+document.getElementById('local-file-bridge').addEventListener('change', syncFilesToPyodide);
+
 async function syncFilesToPyodide() {
-  if (!pyReady) { toast('Wait for Python runtime to initialize first', 'err'); return; }
-  const fileInput = document.getElementById('local-file-bridge');
-  if (fileInput.files.length === 0) return;
+  if (!pyReady) { toast('Wait for Python to finish loading first', 'err'); return; }
+  const input = document.getElementById('local-file-bridge');
+  if (!input.files.length) return;
 
-  for (const file of fileInput.files) {
-    toast(`Syncing ${file.name}...`, 'inf');
-    const reader = new FileReader();
-    
-    // Wrapped in a promise loop to process sequentially
-    await new Promise((resolve) => {
-      reader.onload = async (e) => {
-        const arrayBuffer = e.target.result;
-        try {
-          // Write directly to Pyodide's virtual environment filesystem mount root
-          pyodide.FS.writeFile(file.name, new Uint8Array(arrayBuffer));
-          console.log(`Successfully mapped local file to environment: ${file.name}`);
-        } catch (err) {
-          toast(`VFS Sync Failed: ${err.message}`, 'err');
-        }
-        resolve();
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  }
-  
-  toast('All files mapped to workspace memory', 'ok');
-  updateVfsInventory();
-  fileInput.value = ''; // Flush input channel element
-}
-
-function updateVfsInventory() {
-  const inventoryContainer = document.getElementById('vfs-inventory-list');
-  if (!pyReady || !inventoryContainer) return;
-
-  try {
-    // Read directory array directly from WASM sandbox environment
-    const rawFiles = pyodide.FS.readdir('.');
-    // Ignore internal virtual paths
-    const filteredFiles = rawFiles.filter(name => name !== '.' && name !== '..' && name !== 'tmp' && name !== 'home');
-
-    if (filteredFiles.length === 0) {
-      inventoryContainer.innerHTML = `<div style="font-size:11px; color:var(--text-dim); font-style:italic;">No custom files mounted yet</div>`;
-      return;
+  for (const file of input.files) {
+    toast(`Mounting ${file.name}…`, 'inf');
+    try {
+      await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            pyodide.FS.writeFile(`${VFS_ROOT}/${file.name}`, new Uint8Array(e.target.result));
+            userUploadedFiles.add(file.name);
+            resolve();
+          } catch (err) { reject(err); }
+        };
+        reader.onerror = () => reject(new Error('FileReader error'));
+        reader.readAsArrayBuffer(file);
+      });
+    } catch (err) {
+      toast(`Failed to mount ${file.name}: ${err.message}`, 'err');
     }
+  }
 
-    inventoryContainer.innerHTML = '';
-    filteredFiles.forEach(file => {
-      const item = document.createElement('div');
-      item.className = 'vfs-file-item';
-      item.innerHTML = `<span>📁</span> <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file}</span>`;
-      inventoryContainer.appendChild(item);
-    });
-  } catch (e) {
-    console.error('Error updating virtual directory inventory:', e);
+  toast('All files mounted to workspace', 'ok');
+  refreshVfsInventory();
+  input.value = ''; // clear so the same file can be re-uploaded if needed
+}
+
+// FIX: Only shows files the user explicitly uploaded, not Pyodide internals.
+function refreshVfsInventory() {
+  const container = document.getElementById('vfs-inventory-list');
+  if (!container) return;
+
+  if (userUploadedFiles.size === 0) {
+    container.innerHTML = '<div style="font-size:11px;color:var(--text-dim);font-style:italic;">No files mounted yet</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  for (const name of userUploadedFiles) {
+    const item = document.createElement('div');
+    item.className = 'vfs-file-item';
+    item.innerHTML = `<span>📄</span><span class="vfs-name">${name}</span>`;
+    container.appendChild(item);
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   FILE LOADING
-═══════════════════════════════════════════════════════ */
-document.getElementById('file-input').addEventListener('change', e => {
+/* ═══════════════════════════════════════════════════════════════
+   FILE LOADING (.ipynb)
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('file-input').addEventListener('change', (e) => {
   const f = e.target.files[0];
   if (f) loadFile(f);
 });
 
 const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-dz.addEventListener('drop', e => {
+dz.addEventListener('dragover',  (e) => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()  => dz.classList.remove('over'));
+dz.addEventListener('drop', (e) => {
   e.preventDefault();
   dz.classList.remove('over');
   const f = e.dataTransfer.files[0];
@@ -873,75 +872,79 @@ dz.addEventListener('drop', e => {
 
 function loadFile(file) {
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = (e) => {
     try {
-      const nb = JSON.parse(e.target.result);
-      loadNotebook(nb, file.name);
+      loadNotebook(JSON.parse(e.target.result), file.name);
     } catch {
-      toast('Invalid notebook file', 'err');
+      toast('Invalid notebook file — could not parse JSON', 'err');
     }
   };
   reader.readAsText(file);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    NOTEBOOK RENDERING
-═══════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
+function showWorkspaceUI() {
+  document.getElementById('landing').style.display    = 'none';
+  document.getElementById('cells-area').style.display = 'flex';
+  document.getElementById('toolbar').style.display    = 'flex';
+  document.getElementById('index-section').style.display = 'flex';
+  document.getElementById('nb-stats').style.display   = 'flex';
+  document.getElementById('bottom-cell-creator').style.display = 'flex';
+}
+
 function loadNotebook(nb, filename) {
   notebook = nb;
   cells = [];
   selectedCell = -1;
+  execCounter = 0;
 
-  // Clean filename for the editable container
-  document.getElementById('notebook-name').textContent = filename ? filename.replace('.ipynb', '') : 'Untitled_Notebook';
-  document.getElementById('landing').style.display = 'none';
-  
+  document.getElementById('notebook-name').textContent =
+    filename ? filename.replace(/\.ipynb$/i, '') : 'Untitled_Notebook';
+
   const area = document.getElementById('cells-area');
-  area.style.display = 'flex';
   area.innerHTML = '';
-  
-  document.getElementById('toolbar').style.display = 'flex';
-  document.getElementById('index-section').style.display = 'flex';
-  document.getElementById('nb-stats').style.display = 'flex';
-  document.getElementById('bottom-cell-creator').style.display = 'flex';
+  showWorkspaceUI();
 
-  const kernelName = nb.metadata?.kernelspec?.display_name || nb.metadata?.kernelspec?.name || 'python3';
+  const kernelName = nb.metadata?.kernelspec?.display_name
+                  || nb.metadata?.kernelspec?.name
+                  || 'python3';
   document.getElementById('stat-kernel').textContent = 'Kernel: ' + kernelName;
 
+  // First interline bar (above all cells)
   area.appendChild(createInterlineBar(0));
 
-  (nb.cells || []).forEach((c, i) => {
-    appendCellToUI(c, i);
-  });
+  (nb.cells || []).forEach((c) => appendCellToUI(c));
 
-  updateMetadataStats();
+  updateStats();
   buildIndex();
   toast(`Loaded ${(nb.cells || []).length} cells`, 'ok');
 }
 
-function appendCellToUI(c, idx) {
-  const area = document.getElementById('cells-area');
-  const type = c.cell_type;
-  const source = Array.isArray(c.source) ? c.source.join('') : (c.source || '');
-  const execCount = c.execution_count || null;
-  const outputs = c.outputs || [];
+function appendCellToUI(cellData) {
+  const idx  = cells.length;
+  const type = cellData.cell_type;
+  const source     = Array.isArray(cellData.source) ? cellData.source.join('') : (cellData.source || '');
+  const execCount  = cellData.execution_count ?? null;
+  const outputs    = cellData.outputs || [];
 
-  const wrapperBlock = document.createElement('div');
-  wrapperBlock.className = 'cell-wrapper-block';
-  wrapperBlock.dataset.blockIdx = idx;
+  const block = document.createElement('div');
+  block.className      = 'cell-wrapper-block';
+  block.dataset.blockIdx = idx;
 
-  const cellObject = buildCell(c, idx, type, source, execCount, outputs);
-  wrapperBlock.appendChild(cellObject.el);
-  
-  const downstreamLine = createInterlineBar(idx + 1);
-  wrapperBlock.appendChild(downstreamLine);
+  const cellObj = buildCell(cellData, idx, type, source, execCount, outputs);
+  block.appendChild(cellObj.el);
+  block.appendChild(createInterlineBar(idx + 1));
+  cellObj.block = block;
 
-  area.appendChild(wrapperBlock);
-  
-  cellObject.wrapperBlock = wrapperBlock;
-  cells.push(cellObject);
+  document.getElementById('cells-area').appendChild(block);
+  cells.push(cellObj);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   INTERLINE ADD BAR
+═══════════════════════════════════════════════════════════════ */
 function createInterlineBar(targetIdx) {
   const bar = document.createElement('div');
   bar.className = 'interline-add-bar';
@@ -967,137 +970,110 @@ function createInterlineBar(targetIdx) {
   return bar;
 }
 
-/* ═══════════════════════════════════════════════════════
-   CELL INSERTION & REMOVAL ENGINE
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   CELL INSERTION & DELETION
+═══════════════════════════════════════════════════════════════ */
+
+// FIX: insertCellAt initialises a fully valid notebook if one isn't loaded yet,
+//      including required nbformat fields so export produces valid .ipynb files.
 function insertCellAt(targetIdx, type) {
   if (!notebook) {
-    notebook = { cells: [], metadata: {} };
-    document.getElementById('landing').style.display = 'none';
-    document.getElementById('cells-area').style.display = 'flex';
-    document.getElementById('toolbar').style.display = 'flex';
-    document.getElementById('index-section').style.display = 'flex';
-    document.getElementById('nb-stats').style.display = 'flex';
-    document.getElementById('bottom-cell-creator').style.display = 'flex';
+    notebook = {
+      nbformat: 4,
+      nbformat_minor: 5,
+      metadata: {
+        kernelspec: { display_name: 'Python 3', language: 'python', name: 'python3' },
+        language_info: { name: 'python', version: '3.x' }
+      },
+      cells: []
+    };
+    showWorkspaceUI();
     document.getElementById('cells-area').appendChild(createInterlineBar(0));
   }
 
-  const newCellData = {
+  const newData = {
     cell_type: type,
     metadata: {},
-    source: ""
+    source: ''
   };
   if (type === 'code') {
-    newCellData.execution_count = null;
-    newCellData.outputs = [];
+    newData.execution_count = null;
+    newData.outputs = [];
   }
 
-  notebook.cells.splice(targetIdx, 0, newCellData);
+  notebook.cells.splice(targetIdx, 0, newData);
+
+  const block = document.createElement('div');
+  block.className = 'cell-wrapper-block';
+
+  const cellObj = buildCell(newData, targetIdx, type, '', null, type === 'code' ? [] : null);
+  block.appendChild(cellObj.el);
+  block.appendChild(createInterlineBar(targetIdx + 1));
+  cellObj.block = block;
 
   const area = document.getElementById('cells-area');
-  const wrapperBlock = document.createElement('div');
-  wrapperBlock.className = 'cell-wrapper-block';
-
-  const cellObject = buildCell(newCellData, targetIdx, type, "", null, type === 'code' ? [] : null);
-  wrapperBlock.appendChild(cellObject.el);
-  wrapperBlock.appendChild(createInterlineBar(targetIdx + 1));
-  cellObject.wrapperBlock = wrapperBlock;
-
   if (targetIdx === 0) {
     const topBar = area.querySelector('.interline-add-bar[data-target-line="0"]');
-    topBar.insertAdjacentElement('afterend', wrapperBlock);
+    topBar.insertAdjacentElement('afterend', block);
   } else {
-    const precedingBlock = cells[targetIdx - 1].wrapperBlock;
-    precedingBlock.insertAdjacentElement('afterend', wrapperBlock);
+    cells[targetIdx - 1].block.insertAdjacentElement('afterend', block);
   }
 
-  cells.splice(targetIdx, 0, cellObject);
-
-  reindexAllWorkspaceElements();
-  updateMetadataStats();
+  cells.splice(targetIdx, 0, cellObj);
+  reindex();
+  updateStats();
   buildIndex();
 
   setTimeout(() => {
     selectCell(targetIdx);
-    if (type === 'code') cellObject.codeEl?.focus();
-    else cellObject.el.querySelector('.cell-markdown')?.focus();
-    cellObject.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
+    if (type === 'code') cellObj.codeEl?.focus();
+    else cellObj.el.querySelector('.cell-markdown')?.focus();
+    cellObj.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 60);
 }
 
 function deleteCell(idx) {
   if (!cells[idx]) return;
-  
-  const targetCell = cells[idx];
-  targetCell.wrapperBlock.remove();
-  
+  cells[idx].block.remove();
   cells.splice(idx, 1);
   notebook.cells.splice(idx, 1);
-
-  reindexAllWorkspaceElements();
-  updateMetadataStats();
-  buildIndex();
-  
   selectedCell = -1;
-  toast('Cell deleted successfully', 'inf');
+  reindex();
+  updateStats();
+  buildIndex();
+  toast('Cell deleted', 'inf');
 }
 
-function reindexAllWorkspaceElements() {
+// FIX: reindex only updates data-idx attributes and the interline bar targets.
+//      Button handlers already read idx dynamically from wrapper.dataset.idx,
+//      so no handler rebinding is needed here.
+function reindex() {
   const area = document.getElementById('cells-area');
-  const originalTopBar = area.querySelector('.interline-add-bar[data-target-line="0"]');
-  if (originalTopBar) originalTopBar.dataset.targetLine = 0;
+  const topBar = area.querySelector('.interline-add-bar[data-target-line]');
+  if (topBar) topBar.dataset.targetLine = 0;
 
   cells.forEach((cell, i) => {
-    cell.el.dataset.idx = i;
-    cell.wrapperBlock.dataset.blockIdx = i;
-    
-    const lineBar = cell.wrapperBlock.querySelector('.interline-add-bar');
+    cell.el.dataset.idx          = i;
+    cell.block.dataset.blockIdx  = i;
+    const lineBar = cell.block.querySelector('.interline-add-bar');
     if (lineBar) lineBar.dataset.targetLine = i + 1;
-
-    const runBtn = cell.el.querySelector('.run-btn');
-    if (runBtn) runBtn.onclick = e => { e.stopPropagation(); runCell(i); };
-
-    const copyBtn = cell.el.querySelector('.copy-btn');
-    if (copyBtn) {
-      copyBtn.onclick = e => {
-        e.stopPropagation();
-        const src = cells[i].codeEl ? cells[i].codeEl.innerText : (cells[i].el.querySelector('.cell-markdown')?.innerText || '');
-        navigator.clipboard.writeText(src).then(() => toast('Copied code!', 'ok'));
-      };
-    }
-
-    const delBtn = cell.el.querySelector('.delete-btn');
-    if (delBtn) delBtn.onclick = e => { e.stopPropagation(); deleteCell(i); };
   });
 }
 
-function updateMetadataStats() {
-  let codeCount = 0, mdCount = 0;
-  cells.forEach(c => {
-    if (c.type === 'code') codeCount++;
-    else if (c.type === 'markdown') mdCount++;
-  });
-  document.getElementById('stat-cells').textContent = cells.length;
-  document.getElementById('stat-code').textContent = codeCount;
-  document.getElementById('stat-md').textContent = mdCount;
-  
-  const area = document.getElementById('cells-area');
-  const topBar = area.querySelector('.interline-add-bar[data-target-line="0"]');
-  if (topBar) {
-    if (cells.length === 0) topBar.classList.add('always-visible');
-    else topBar.classList.remove('always-visible');
-  }
-}
-
-/* ═══════════════════════════════════════════════════════
-   CELL OBJECT BUILDER
-═══════════════════════════════════════════════════════ */
-function buildCell(cRef, idx, type, source, execCount, outputs) {
+/* ═══════════════════════════════════════════════════════════════
+   CELL BUILDER
+   FIX: All button onclick handlers read idx dynamically from
+        wrapper.dataset.idx at click time — no stale closures.
+        Markdown edit/blur cycle stores raw source in cellData.source
+        (the same object reference in notebook.cells) so export is correct.
+═══════════════════════════════════════════════════════════════ */
+function buildCell(cellData, idx, type, source, execCount, outputs) {
   const wrapper = document.createElement('div');
   wrapper.className = 'cell';
   wrapper.dataset.idx = idx;
-  wrapper.addEventListener('click', () => selectCell(parseInt(wrapper.dataset.idx, 10)));
+  wrapper.addEventListener('click', () => selectCell(+wrapper.dataset.idx));
 
+  /* ── Header ── */
   const header = document.createElement('div');
   header.className = 'cell-header';
 
@@ -1118,90 +1094,121 @@ function buildCell(cRef, idx, type, source, execCount, outputs) {
     const runBtn = document.createElement('button');
     runBtn.className = 'cell-btn run-btn';
     runBtn.textContent = '▶ Run';
-    runBtn.onclick = e => { e.stopPropagation(); runCell(parseInt(wrapper.dataset.idx, 10)); };
+    // FIX: reads live idx from dataset at click time
+    runBtn.onclick = (e) => { e.stopPropagation(); runCell(+wrapper.dataset.idx); };
     actions.appendChild(runBtn);
   }
 
   const copyBtn = document.createElement('button');
   copyBtn.className = 'cell-btn copy-btn';
   copyBtn.textContent = '⎘ Copy';
-  copyBtn.onclick = e => {
+  copyBtn.onclick = (e) => {
     e.stopPropagation();
-    const liveIdx = parseInt(wrapper.dataset.idx, 10);
-    const src = cells[liveIdx].codeEl ? cells[liveIdx].codeEl.innerText : (cells[liveIdx].el.querySelector('.cell-markdown')?.innerText || '');
-    navigator.clipboard.writeText(src).then(() => toast('Copied code!', 'ok'));
+    const i   = +wrapper.dataset.idx;
+    const src = cells[i].codeEl
+      ? cells[i].codeEl.innerText
+      : (cells[i].el.querySelector('.cell-markdown')?.innerText || '');
+    navigator.clipboard.writeText(src).then(() => toast('Copied!', 'ok'));
   };
   actions.appendChild(copyBtn);
 
   const delBtn = document.createElement('button');
   delBtn.className = 'cell-btn delete-btn';
   delBtn.textContent = '✕ Delete';
-  delBtn.title = 'Remove this cell from layout';
-  delBtn.onclick = e => { e.stopPropagation(); deleteCell(parseInt(wrapper.dataset.idx, 10)); };
+  // FIX: reads live idx from dataset at click time
+  delBtn.onclick = (e) => { e.stopPropagation(); deleteCell(+wrapper.dataset.idx); };
   actions.appendChild(delBtn);
 
   header.appendChild(actions);
   wrapper.appendChild(header);
 
+  /* ── Body ── */
   let codeEl = null;
+
   if (type === 'code') {
     codeEl = document.createElement('div');
-    codeEl.className = 'cell-code';
+    codeEl.className       = 'cell-code';
     codeEl.contentEditable = 'true';
-    codeEl.spellcheck = false;
-    codeEl.textContent = source;
-    codeEl.addEventListener('keydown', e => handleCellKey(e, () => parseInt(wrapper.dataset.idx, 10)));
-    codeEl.addEventListener('focus', () => selectCell(parseInt(wrapper.dataset.idx, 10)));
-    codeEl.addEventListener('input', () => debounceBuildIndex());
+    codeEl.spellcheck      = false;
+    codeEl.textContent     = source;
+    codeEl.addEventListener('keydown', (e) => handleCellKey(e, () => +wrapper.dataset.idx));
+    codeEl.addEventListener('focus',   () => selectCell(+wrapper.dataset.idx));
+    codeEl.addEventListener('input',   () => debounceBuildIndex());
     wrapper.appendChild(codeEl);
+
   } else if (type === 'markdown') {
     const mdEl = document.createElement('div');
-    mdEl.className = 'cell-markdown';
+    mdEl.className       = 'cell-markdown';
     mdEl.contentEditable = 'true';
-    mdEl.innerHTML = source ? marked.parse(source) : '<p style="color:var(--text-dim);font-style:italic">Empty markdown cell - click to edit text...</p>';
-    
+    mdEl.innerHTML = source
+      ? marked.parse(source)
+      : '<p style="color:var(--text-dim);font-style:italic">Empty markdown cell — click to edit…</p>';
+
+    // On focus: switch to raw markdown text for editing
     mdEl.addEventListener('focus', () => {
-      selectCell(parseInt(wrapper.dataset.idx, 10));
-      const liveIdx = parseInt(wrapper.dataset.idx, 10);
-      const rawText = Array.isArray(cells[liveIdx].cRef.source) ? cells[liveIdx].cRef.source.join('') : (cells[liveIdx].cRef.source || '');
-      mdEl.innerText = rawText;
+      selectCell(+wrapper.dataset.idx);
+      // Pull raw source from the shared cellData reference
+      const raw = Array.isArray(cellData.source) ? cellData.source.join('') : (cellData.source || '');
+      mdEl.innerText = raw;
     });
+
+    // On blur: save raw markdown back to cellData.source and re-render
     mdEl.addEventListener('blur', () => {
-      const liveIdx = parseInt(wrapper.dataset.idx, 10);
-      cells[liveIdx].cRef.source = mdEl.innerText.split('\n').map((l, i, a) => i < a.length - 1 ? l + '\n' : l);
-      mdEl.innerHTML = marked.parse(mdEl.innerText || '*Empty markdown*');
+      const raw = mdEl.innerText;
+      // FIX: write back into the shared cellData object that notebook.cells holds
+      cellData.source = raw.split('\n').map((line, i, arr) =>
+        i < arr.length - 1 ? line + '\n' : line
+      );
+      mdEl.innerHTML = raw.trim()
+        ? marked.parse(raw)
+        : '<p style="color:var(--text-dim);font-style:italic">Empty markdown cell — click to edit…</p>';
       debounceBuildIndex();
     });
+
     wrapper.appendChild(mdEl);
+
   } else {
+    // Raw cell — display only
     const rawEl = document.createElement('div');
-    rawEl.className = 'cell-code';
+    rawEl.className  = 'cell-code';
     rawEl.style.color = 'var(--text-muted)';
     rawEl.textContent = source;
     wrapper.appendChild(rawEl);
   }
 
+  /* ── Output ── */
   const outputEl = document.createElement('div');
   outputEl.className = 'cell-output empty';
-
   if (outputs && outputs.length > 0) {
     renderOutputs(outputEl, outputs);
     outputEl.classList.remove('empty');
   }
-
   wrapper.appendChild(outputEl);
 
-  return { el: wrapper, type, outputs: JSON.parse(JSON.stringify(outputs || [])), codeEl, outputEl, ec, cRef };
+  return {
+    el: wrapper,
+    type,
+    codeEl,
+    outputEl,
+    ec,
+    block: null,          // assigned by caller
+    cellData,             // shared reference into notebook.cells[i]
+    liveOutputs: JSON.parse(JSON.stringify(outputs || []))
+  };
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   OUTPUT RENDERER
+═══════════════════════════════════════════════════════════════ */
 function renderOutputs(container, outputs) {
   container.innerHTML = '';
   if (!outputs) return;
-  outputs.forEach(out => {
+  for (const out of outputs) {
     const div = document.createElement('div');
     if (out.output_type === 'stream') {
-      div.className = 'out-stream';
-      div.textContent = Array.isArray(out.text) ? out.text.join('') : out.text;
+      div.className   = 'out-stream';
+      div.textContent = Array.isArray(out.text) ? out.text.join('') : (out.text || '');
+
     } else if (out.output_type === 'display_data' || out.output_type === 'execute_result') {
       const data = out.data || {};
       if (data['text/html']) {
@@ -1210,46 +1217,53 @@ function renderOutputs(container, outputs) {
       } else if (data['image/png']) {
         const img = document.createElement('img');
         img.className = 'out-img';
-        img.src = 'data:image/png;base64,' + (Array.isArray(data['image/png']) ? data['image/png'].join('') : data['image/png']);
+        img.src = 'data:image/png;base64,' +
+          (Array.isArray(data['image/png']) ? data['image/png'].join('') : data['image/png']);
         div.appendChild(img);
       } else if (data['text/plain']) {
-        div.className = 'out-result';
+        div.className   = 'out-result';
         div.textContent = Array.isArray(data['text/plain']) ? data['text/plain'].join('') : data['text/plain'];
       }
+
     } else if (out.output_type === 'error') {
-      div.className = 'out-error';
-      div.textContent = [out.ename + ': ' + out.evalue, ...(out.traceback||[]).map(l => l.replace(/\x1b\[[0-9;]*m/g, ''))].join('\n');
+      div.className   = 'out-error';
+      div.textContent = [
+        `${out.ename}: ${out.evalue}`,
+        ...(out.traceback || []).map(l => l.replace(/\x1b\[[0-9;]*m/g, ''))
+      ].join('\n');
     }
     container.appendChild(div);
-  });
+  }
 }
 
-/* ═══════════════════════════════════════════════════════
-   SIDEBAR INDEX LOGIC
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR INDEX
+═══════════════════════════════════════════════════════════════ */
 function debounceBuildIndex() {
-  clearTimeout(indexDebounceTimeout);
-  indexDebounceTimeout = setTimeout(buildIndex, 300);
+  clearTimeout(indexDebounceTimer);
+  indexDebounceTimer = setTimeout(buildIndex, 300);
 }
 
 function buildIndex() {
-  const idx = document.getElementById('cell-index');
-  idx.innerHTML = '';
+  const container = document.getElementById('cell-index');
+  container.innerHTML = '';
   cells.forEach((cell, i) => {
     const item = document.createElement('div');
-    item.className = 'idx-item' + (i === selectedCell ? ' active' : '');
+    item.className  = 'idx-item' + (i === selectedCell ? ' active' : '');
     item.dataset.idx = i;
 
     const badge = document.createElement('span');
-    badge.className = 'idx-badge ' + (cell.type === 'code' ? 'code' : 'md');
+    badge.className   = 'idx-badge ' + (cell.type === 'code' ? 'code' : 'md');
     badge.textContent = cell.type === 'code' ? 'PY' : 'MD';
 
     const label = document.createElement('span');
-    const src = (cell.codeEl ? cell.codeEl.innerText : cell.el.querySelector('.cell-markdown')?.textContent || '').slice(0, 40);
-    label.textContent = src.trim() || `Cell ${i + 1}`;
-    label.style.overflow = 'hidden';
-    label.style.textOverflow = 'ellipsis';
-    label.style.whiteSpace = 'nowrap';
+    const preview = (
+      cell.codeEl
+        ? cell.codeEl.innerText
+        : cell.el.querySelector('.cell-markdown')?.textContent || ''
+    ).trim().slice(0, 40);
+    label.textContent = preview || `Cell ${i + 1}`;
+    label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
 
     item.appendChild(badge);
     item.appendChild(label);
@@ -1257,7 +1271,7 @@ function buildIndex() {
       selectCell(i);
       cell.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
-    idx.appendChild(item);
+    container.appendChild(item);
   });
 }
 
@@ -1265,44 +1279,64 @@ function selectCell(idx) {
   selectedCell = idx;
   document.querySelectorAll('.cell').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.idx-item').forEach(el => el.classList.remove('active'));
-  
-  if (cells[idx]) {
-    cells[idx].el.classList.add('selected');
-  }
+  if (cells[idx]) cells[idx].el.classList.add('selected');
   const idxItem = document.querySelector(`.idx-item[data-idx="${idx}"]`);
   if (idxItem) idxItem.classList.add('active');
 }
 
-/* ═══════════════════════════════════════════════════════
-   KEYBOARD INPUT ROUTINES
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════════════════════ */
+function updateStats() {
+  let code = 0, md = 0;
+  cells.forEach(c => { if (c.type === 'code') code++; else if (c.type === 'markdown') md++; });
+  document.getElementById('stat-cells').textContent = cells.length;
+  document.getElementById('stat-code').textContent  = code;
+  document.getElementById('stat-md').textContent    = md;
+
+  const topBar = document.querySelector('#cells-area .interline-add-bar[data-target-line="0"]');
+  if (topBar) {
+    if (cells.length === 0) topBar.classList.add('always-visible');
+    else topBar.classList.remove('always-visible');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD HANDLING
+   FIX: pyReady guard added so Shift+Enter doesn't insert a cell
+        when Python hasn't finished booting.
+═══════════════════════════════════════════════════════════════ */
 function handleCellKey(e, getLiveIdx) {
-  const currentIdx = getLiveIdx();
   if (e.key === 'Tab') {
     e.preventDefault();
     const sel = window.getSelection();
     if (!sel.rangeCount) return;
     const range = sel.getRangeAt(0);
-    const spacesNode = document.createTextNode('    ');
-    range.insertNode(spacesNode);
-    range.setStartAfter(spacesNode);
-    range.setEndAfter(spacesNode);
+    const tab   = document.createTextNode('    ');
+    range.deleteContents();
+    range.insertNode(tab);
+    range.setStartAfter(tab);
+    range.setEndAfter(tab);
     sel.removeAllRanges();
     sel.addRange(range);
     debounceBuildIndex();
-  } 
-  else if (e.ctrlKey && e.key === 'Enter') {
+    return;
+  }
+
+  // FIX: bail out if runtime isn't ready
+  if (!pyReady) return;
+
+  const idx = getLiveIdx();
+  if (e.ctrlKey && !e.shiftKey && e.key === 'Enter') {
     e.preventDefault();
-    runCell(currentIdx);
-  } 
-  else if (e.shiftKey && e.key === 'Enter') {
+    runCell(idx);
+  } else if (e.shiftKey && e.key === 'Enter') {
     e.preventDefault();
-    runCell(currentIdx).then(() => {
-      const nextIdx = currentIdx + 1;
-      if (cells[nextIdx]) {
-        selectCell(nextIdx);
-        const nextEditor = cells[nextIdx].codeEl || cells[nextIdx].el.querySelector('.cell-markdown');
-        nextEditor?.focus();
+    runCell(idx).then(() => {
+      if (cells[idx + 1]) {
+        selectCell(idx + 1);
+        const next = cells[idx + 1].codeEl || cells[idx + 1].el.querySelector('.cell-markdown');
+        next?.focus();
       } else {
         insertCellAt(cells.length, 'code');
       }
@@ -1310,110 +1344,112 @@ function handleCellKey(e, getLiveIdx) {
   }
 }
 
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'R') {
-    e.preventDefault();
-    runAll();
-  }
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'R') { e.preventDefault(); runAll(); }
 });
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    EXECUTION ENGINE
-═══════════════════════════════════════════════════════ */
+   FIX: Empty-source guard added.
+        Pyodide proxy objects are destroyed after use.
+        Matplotlib uses a fresh BytesIO per run (no state bleed).
+        VFS inventory refreshed after each run (Python may have written files).
+═══════════════════════════════════════════════════════════════ */
 async function runCell(idx) {
   if (!pyReady) { toast('Python not ready yet', 'err'); return; }
   const cell = cells[idx];
   if (!cell || cell.type !== 'code') return;
 
+  // FIX: guard against running empty/whitespace-only cells
   const source = cell.codeEl.innerText;
-  cell.el.classList.add('running');
-  cell.el.classList.remove('has-error', 'success');
-  cell.ec.textContent = '[*]';
-  cell.outputEl.innerHTML = '<div style="color:var(--text-dim);font-size:12px;display:flex;align-items:center;gap:8px"><span class="spinner"></span> Running…</div>';
-  cell.outputEl.classList.remove('empty');
+  if (!source.trim()) return;
 
+  cell.el.classList.remove('has-error', 'success');
+  cell.el.classList.add('running');
+  cell.ec.textContent = '[*]';
+  cell.outputEl.innerHTML =
+    '<div style="color:var(--text-dim);font-size:12px;display:flex;align-items:center;gap:8px">' +
+    '<span class="spinner"></span> Running…</div>';
+  cell.outputEl.classList.remove('empty');
   setStatus('busy', `Running cell ${idx + 1}…`);
 
-  let proxiesToClear = [];
-  let generatedOutputs = [];
+  const generatedOutputs = [];
 
   try {
-    const clearBufferRef = await pyodide.runPythonAsync(`_captured._items = []`);
-    if (clearBufferRef && typeof clearBufferRef.destroy === 'function') clearBufferRef.destroy();
+    // Clear stdout/stderr buffer
+    await pyodide.runPythonAsync('_captured._items = []');
 
-    let resultRepr = null;
-    let executionSuccess = false;
-    let rawErrorTraceback = "";
+    let resultRepr      = null;
+    let executionOk     = false;
+    let rawTraceback    = '';
 
+    // ── Run user code ──
     try {
-      const runResultRef = await pyodide.runPythonAsync(source);
-      if (runResultRef && typeof runResultRef.destroy === 'function') {
-        proxiesToClear.push(runResultRef);
+      const resultProxy = await pyodide.runPythonAsync(source);
+      if (resultProxy !== undefined && resultProxy !== null) {
+        const s = resultProxy.toString ? resultProxy.toString() : String(resultProxy);
+        if (s && s !== 'None') resultRepr = s;
       }
-      if (runResultRef !== undefined && runResultRef !== null) {
-        const pyStr = runResultRef.toString ? runResultRef.toString() : String(runResultRef);
-        if (pyStr && pyStr !== 'None') resultRepr = pyStr;
-      }
-      executionSuccess = true;
-    } catch (err) {
-      executionSuccess = false;
-      try {
-        await pyodide.runPythonAsync(`
-import traceback
-_raw_err = traceback.format_exc()
-`);
-        rawErrorTraceback = pyodide.globals.get('_raw_err');
-      } catch (nestedErr) {
-        rawErrorTraceback = err.message || String(err);
-      }
+      // FIX: destroy proxy to free WASM memory
+      if (resultProxy && typeof resultProxy.destroy === 'function') resultProxy.destroy();
+      executionOk = true;
+    } catch {
+      // Capture the formatted traceback from Python's own traceback module
+      await pyodide.runPythonAsync('import traceback as _tb; _raw_err = _tb.format_exc()');
+      const tbProxy = pyodide.globals.get('_raw_err');
+      rawTraceback  = String(tbProxy);
+      if (tbProxy && typeof tbProxy.destroy === 'function') tbProxy.destroy();
     }
 
+    // ── Read captured stdout ──
+    await pyodide.runPythonAsync('import json as _json; _cap_json = _json.dumps(_captured._items)');
+    const capProxy   = pyodide.globals.get('_cap_json');
+    const capturedItems = JSON.parse(String(capProxy));
+    if (capProxy && typeof capProxy.destroy === 'function') capProxy.destroy();
+
+    // ── Grab matplotlib figure if any ──
+    await pyodide.runPythonAsync(`
+_img_b64 = ""
+if _has_mpl:
+    import matplotlib.pyplot as _plt
+    if _plt.get_fignums():
+        import io as _io
+        _buf = _io.BytesIO()
+        _plt.savefig(_buf, format='png', bbox_inches='tight', dpi=110)
+        _buf.seek(0)
+        _img_b64 = base64.b64encode(_buf.read()).decode('utf-8')
+        _plt.close('all')
+        _buf.close()
+`);
+    const imgProxy = pyodide.globals.get('_img_b64');
+    const imgData  = String(imgProxy);
+    if (imgProxy && typeof imgProxy.destroy === 'function') imgProxy.destroy();
+
+    // ── Render output ──
     cell.outputEl.innerHTML = '';
 
-    await pyodide.runPythonAsync(`
-import json
-_captured_json = json.dumps(_captured._items)
-`);
-    const capturedItems = JSON.parse(pyodide.globals.get('_captured_json'));
-
+    // stdout
     if (capturedItems && capturedItems.length > 0) {
-      let combinedStreamText = '';
-      capturedItems.forEach(item => { combinedStreamText += item.text || ''; });
-
-      if (combinedStreamText) {
-        const streamDiv = document.createElement('div');
-        streamDiv.className = 'out-stream';
-        streamDiv.textContent = combinedStreamText;
-        cell.outputEl.appendChild(streamDiv);
-
+      const text = capturedItems.map(i => i.text || '').join('');
+      if (text) {
+        const div = document.createElement('div');
+        div.className   = 'out-stream';
+        div.textContent = text;
+        cell.outputEl.appendChild(div);
         generatedOutputs.push({
           output_type: 'stream',
           name: 'stdout',
-          text: combinedStreamText.split('\n').map((line, idx, arr) => idx < arr.length - 1 ? line + '\n' : line)
+          text: text.split('\n').map((l, i, a) => i < a.length - 1 ? l + '\n' : l)
         });
       }
     }
 
-    await pyodide.runPythonAsync(`
-import base64
-_img_data = ""
-if '_has_mpl' in globals() and _has_mpl:
-    import matplotlib.pyplot as plt
-    if plt.get_fignums():
-        import io
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight')
-        buf.seek(0)
-        _img_data = base64.b64encode(buf.read()).decode('utf-8')
-        plt.close('all')
-`);
-    const imgData = pyodide.globals.get('_img_data');
+    // matplotlib figure
     if (imgData) {
       const img = document.createElement('img');
       img.className = 'out-img';
       img.src = 'data:image/png;base64,' + imgData;
       cell.outputEl.appendChild(img);
-
       generatedOutputs.push({
         output_type: 'display_data',
         data: { 'image/png': imgData },
@@ -1421,13 +1457,13 @@ if '_has_mpl' in globals() and _has_mpl:
       });
     }
 
-    if (executionSuccess) {
+    if (executionOk) {
+      // return value
       if (resultRepr !== null) {
-        const resDiv = document.createElement('div');
-        resDiv.className = 'out-result';
-        resDiv.textContent = resultRepr;
-        cell.outputEl.appendChild(resDiv);
-
+        const div = document.createElement('div');
+        div.className   = 'out-result';
+        div.textContent = resultRepr;
+        cell.outputEl.appendChild(div);
         generatedOutputs.push({
           output_type: 'execute_result',
           execution_count: execCounter + 1,
@@ -1438,50 +1474,45 @@ if '_has_mpl' in globals() and _has_mpl:
       execCounter++;
       cell.ec.textContent = `[${execCounter}]`;
       cell.el.classList.add('success');
-    } else {
-      const cleanTb = rawErrorTraceback.replace(/\x1b\[[0-9;]*m/g, '');
-      const errDiv = document.createElement('div');
-      errDiv.className = 'out-error';
-      errDiv.textContent = cleanTb;
-      cell.outputEl.appendChild(errDiv);
 
-      const lines = cleanTb.split('\n').filter(l => l.trim());
-      const lastLine = lines[lines.length - 1] || 'RuntimeError: Execution failed';
-      const colonIdx = lastLine.indexOf(':');
-      const eName = colonIdx !== -1 ? lastLine.substring(0, colonIdx).trim() : 'RuntimeError';
-      const eValue = colonIdx !== -1 ? lastLine.substring(colonIdx + 1).trim() : lastLine;
+    } else {
+      // error / traceback
+      const clean = rawTraceback.replace(/\x1b\[[0-9;]*m/g, '');
+      const div   = document.createElement('div');
+      div.className   = 'out-error';
+      div.textContent = clean;
+      cell.outputEl.appendChild(div);
+
+      const lines    = clean.split('\n').filter(l => l.trim());
+      const lastLine = lines[lines.length - 1] || 'RuntimeError';
+      const colon    = lastLine.indexOf(':');
+      const eName    = colon !== -1 ? lastLine.slice(0, colon).trim()  : 'RuntimeError';
+      const eValue   = colon !== -1 ? lastLine.slice(colon + 1).trim() : lastLine;
 
       generatedOutputs.push({
         output_type: 'error',
         ename: eName,
         evalue: eValue,
-        traceback: cleanTb.split('\n')
+        traceback: clean.split('\n')
       });
-
       execCounter++;
       cell.ec.textContent = `[${execCounter}]`;
       cell.el.classList.add('has-error');
     }
 
-    cell.outputs = generatedOutputs;
     if (cell.outputEl.children.length === 0) cell.outputEl.classList.add('empty');
+    cell.liveOutputs = generatedOutputs;
 
   } catch (outerErr) {
-    console.error("Runner failure:", outerErr);
+    console.error('Runner failure:', outerErr);
     cell.outputEl.innerHTML = `<div class="out-error">Internal Error: ${outerErr.message}</div>`;
     cell.outputEl.classList.remove('empty');
     cell.el.classList.add('has-error');
   } finally {
-    proxiesToClear.forEach(p => {
-      if (p && typeof p.destroy === 'function') {
-        try { p.destroy(); } catch (_) {}
-      }
-    });
     cell.el.classList.remove('running');
     setStatus('ready', 'Python ready');
-    
-    // Auto-update storage array inventory view in case python code generated files directly
-    updateVfsInventory();
+    // Refresh VFS in case Python code wrote files during execution
+    refreshVfsInventory();
   }
 }
 
@@ -1496,46 +1527,54 @@ async function runAll() {
 }
 
 function runSelected() {
-  if (selectedCell >= 0 && cells[selectedCell]?.type === 'code') {
-    runCell(selectedCell);
-  } else {
-    toast('Select a code cell first', 'inf');
-  }
+  if (selectedCell >= 0 && cells[selectedCell]?.type === 'code') runCell(selectedCell);
+  else toast('Select a code cell first', 'inf');
 }
 
 function clearAllOutputs() {
   cells.forEach(cell => {
-    if (cell.type === 'code') {
-      cell.outputEl.innerHTML = '';
-      cell.outputEl.classList.add('empty');
-      cell.el.classList.remove('has-error', 'success');
-      cell.ec.textContent = '[ ]';
-      cell.outputs = []; 
-    }
+    if (cell.type !== 'code') return;
+    cell.outputEl.innerHTML = '';
+    cell.outputEl.classList.add('empty');
+    cell.el.classList.remove('has-error', 'success');
+    cell.ec.textContent = '[ ]';
+    cell.liveOutputs = [];
   });
   execCounter = 0;
-  toast('Outputs cleared', 'inf');
+  toast('All outputs cleared', 'inf');
 }
 
 async function resetKernel() {
   if (!pyReady) return;
-  setStatus('busy', 'Resetting…');
+  setStatus('busy', 'Resetting kernel…');
   try {
-    const resetRef = await pyodide.runPythonAsync(`
-import sys, io, builtins
+    await pyodide.runPythonAsync(`
 _captured._items = []
-_keep = {'_captured', '_has_mpl', 'sys', 'io', 'builtins', 'base64', 'json', 'traceback', 'plt', 'matplotlib', '_fig_data'}
+_keep = {
+    '_captured', '_has_mpl', 'sys', 'io', 'builtins',
+    'base64', 'json', 'traceback', '_tb', 'matplotlib',
+    '_plt', '_json', '_cap_json', '_img_b64', '_raw_err',
+    '_io', '_buf', '_keep', '_del'
+}
 _del = [k for k in list(globals().keys()) if not k.startswith('__') and k not in _keep]
 for k in _del:
     try: del globals()[k]
     except: pass
 if _has_mpl:
-    import matplotlib.pyplot as plt
-    plt.close('all')
+    import matplotlib.pyplot as _plt
+    _plt.close('all')
 `);
-    if (resetRef && typeof resetRef.destroy === 'function') resetRef.destroy();
+    // FIX: reset exec count labels on all cells, not just clear outputs
+    cells.forEach(cell => {
+      if (cell.type === 'code') {
+        cell.outputEl.innerHTML = '';
+        cell.outputEl.classList.add('empty');
+        cell.el.classList.remove('has-error', 'success');
+        cell.ec.textContent = '[ ]';
+        cell.liveOutputs = [];
+      }
+    });
     execCounter = 0;
-    clearAllOutputs();
     toast('Kernel reset', 'ok');
   } catch (e) {
     toast('Reset failed: ' + e.message, 'err');
@@ -1543,100 +1582,64 @@ if _has_mpl:
   setStatus('ready', 'Python ready');
 }
 
-/* ═══════════════════════════════════════════════════════
-   EXPORT STATE MANAGEMENT
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   EXPORT
+   FIX: Code cells read from the editor, markdown cells read
+        from cellData.source (the shared reference updated on blur),
+        not from .textContent which strips markdown syntax.
+═══════════════════════════════════════════════════════════════ */
 function exportNotebook() {
   if (!notebook) { toast('No notebook loaded', 'err'); return; }
 
   cells.forEach((cell, i) => {
-    if (notebook.cells[i]) {
-      if (cell.type === 'code') {
-        const lines = cell.codeEl.innerText.split('\n').map((line, idx, arr) => {
-          return idx < arr.length - 1 ? line + '\n' : line;
-        });
-        notebook.cells[i].source = lines;
-        notebook.cells[i].execution_count = cell.ec.textContent === '[ ]' || cell.ec.textContent === '[*]' ? null : parseInt(cell.ec.textContent.replace(/[\[\]]/g, ''), 10);
-        notebook.cells[i].outputs = cell.outputs || []; 
-      } else {
-        const rawLines = (cell.el.querySelector('.cell-markdown')?.textContent || '').split('\n').map((line, idx, arr) => {
-          return idx < arr.length - 1 ? line + '\n' : line;
-        });
-        if (rawLines.length > 0) {
-           notebook.cells[i].source = rawLines;
-        }
-      }
+    if (!notebook.cells[i]) return;
+    if (cell.type === 'code') {
+      const raw = cell.codeEl.innerText;
+      notebook.cells[i].source = raw.split('\n').map((l, idx, arr) =>
+        idx < arr.length - 1 ? l + '\n' : l
+      );
+      notebook.cells[i].outputs = cell.liveOutputs || [];
+      const ecText = cell.ec.textContent;
+      notebook.cells[i].execution_count =
+        (ecText === '[ ]' || ecText === '[*]')
+          ? null
+          : parseInt(ecText.replace(/[\[\]]/g, ''), 10);
+    } else if (cell.type === 'markdown') {
+      // FIX: use cellData.source (raw markdown), not textContent (rendered text)
+      notebook.cells[i].source = Array.isArray(cell.cellData.source)
+        ? cell.cellData.source
+        : (cell.cellData.source || '').split('\n').map((l, idx, arr) =>
+            idx < arr.length - 1 ? l + '\n' : l
+          );
     }
   });
 
   const blob = new Blob([JSON.stringify(notebook, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
   a.href = url;
-  
-  // Use custom target dynamic header title contents for download attribute binding
-  const explicitTitle = document.getElementById('notebook-name').textContent.trim() || 'notebook';
-  a.download = explicitTitle.endsWith('.ipynb') ? explicitTitle : `${explicitTitle}.ipynb`;
-  
+  const title = document.getElementById('notebook-name').textContent.trim() || 'notebook';
+  a.download  = title.endsWith('.ipynb') ? title : `${title}.ipynb`;
   a.click();
   URL.revokeObjectURL(url);
-  toast('Exported successfully!', 'ok');
+  toast('Saved successfully!', 'ok');
 }
 
-/* ═══════════════════════════════════════════════════════
-   TOAST HELPER
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════ */
 function toast(msg, type = 'inf') {
-  const container = document.getElementById('toast');
   const el = document.createElement('div');
-  el.className = 'toast-item ' + type;
+  el.className   = 'toast-item ' + type;
   el.textContent = msg;
-  container.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
 }
 
-/* ═══════════════════════════════════════════════════════
-   BOOTSTRAP
-═══════════════════════════════════════════════════════ */
-initPyodide()
-async function syncFilesToPyodide() {
-  if (!pyReady) { toast('Wait for Python runtime to initialize first', 'err'); return; }
-  const fileInput = document.getElementById('local-file-bridge');
-  if (fileInput.files.length === 0) return;
-
-  // Process files one by one using a proper async queue loop
-  for (const file of fileInput.files) {
-    toast(`Syncing ${file.name}...`, 'inf');
-    
-    try {
-      await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          try {
-            const arrayBuffer = e.target.result;
-            // Use an absolute path to force it to write directly into /home/pyodide/
-            pyodide.FS.writeFile(`/home/pyodide/${file.name}`, new Uint8Array(arrayBuffer));
-            console.log(`Successfully mapped file: /home/pyodide/${file.name}`);
-            resolve();
-          } catch (err) {
-            reject(err);
-          }
-        };
-        
-        reader.onerror = () => reject(new Error("FileReader encounterd an error."));
-        reader.readAsArrayBuffer(file);
-      });
-    } catch (err) {
-      toast(`VFS Sync Failed for ${file.name}: ${err.message}`, 'err');
-      console.error(err);
-    }
-  }
-  
-  toast('All files mapped to workspace memory', 'ok');
-  updateVfsInventory();
-  fileInput.value = ''; // Safely clear out the element now that the loop is completely done
-}
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════════════ */
+initPyodide();
 </script>
 </body>
 </html>
